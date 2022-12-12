@@ -1,0 +1,3 @@
+localStorage.username = response.data["username"];
+localStorage.token = response.data["token"];
+localStorage.isLogedIn = true;
