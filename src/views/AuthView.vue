@@ -19,10 +19,6 @@
           </button>
         </div>
         <div id="alertLogin">
-          <v-alert v-if="successfullLabel" dismissible type="success">
-            Успешно! Вы зашли в свой аккаунт!
-          </v-alert>
-
           <v-alert v-if="errorLabel" dismissible type="error">
             Неправильный логин или пароль!
           </v-alert>
@@ -41,10 +37,9 @@ export default {
     return {
       redColor: colors.red.darken1,
       greyColor: colors.grey.lighten4,
-      url: "http://localhost:8000",
+      url: "http://boszhan.kz",
       login: "",
       password: "",
-      successfullLabel: false,
       errorLabel: false,
       countDown: 5,
     };
@@ -58,7 +53,6 @@ export default {
         }, 1000);
       } else {
         this.errorLabel = false;
-        this.successfullLabel = false;
       }
     },
 
@@ -68,24 +62,17 @@ export default {
           "Content-Type": "application/json; charset=UTF-8",
         },
       };
-      const body = { username: this.login, password: this.password };
+      const body = { login: this.login, password: this.password };
       this.axios
         .post(this.url + "/api/login", body, config)
         .then((response) => {
-          localStorage.username = response.data["username"];
-          localStorage.token = response.data["token"];
-          localStorage.isLogedIn = true;
-          this.successfullLabel = true;
-          this.countDown = 5;
-          this.countDownTimer();
-          if (this.countDown == 5) {
-            this.$router.push("/");
-          } else {
-            this.$router.push("/");
-          }
+          localStorage.username = response.data["user"]["name"];
+          localStorage.token = response.data["access_token"];
+          localStorage.isLogedIn = "true";
+          this.$router.push("/");
         })
         .catch((error) => {
-          console.log(error.response.request.response);
+          console.log(JSON.parse(error.response.request.response));
           this.errorLabel = true;
           this.countDown = 5;
           this.countDownTimer();
@@ -96,6 +83,8 @@ export default {
   mounted() {
     if (localStorage.isLogedIn == "false") {
       this.$router.push("/auth");
+    } else if (localStorage.isLogedIn == "true") {
+      this.$router.push("/");
     }
   },
 };
