@@ -21,6 +21,23 @@
       </v-toolbar>
       <v-main>
         <v-container fluid class="pa-10">
+          <v-row>
+            <v-text-field
+              class="ma-5"
+              label="Название"
+              variant="solo"
+              v-model="searchTextField"
+            ></v-text-field>
+            <v-btn
+              stacked
+              prepend-icon="mdi-magnify"
+              id="searchButton"
+              class="ma-5"
+              v-on:click="searchByName"
+            >
+              Поиск
+            </v-btn>
+          </v-row>
           <v-table class="elevation-1">
             <thead>
               <tr>
@@ -33,14 +50,14 @@
             </thead>
             <tbody>
               <tr
-                v-for="item in stores"
+                v-for="item in displayedList"
                 :key="item.name"
-                v-on:click="showMarkets"
+                v-on:click="showMarkets(item.id, item.enabled)"
               >
-                <td>{{ item.status }}</td>
+                <td>{{ item.enabled == 1 ? "" : "Заблокирован" }}</td>
                 <td>{{ item.name }}</td>
-                <td>{{ item.priceType }}</td>
-                <td>{{ item.paymentType }}</td>
+                <td>{{ item.price_type.name }}</td>
+                <td>{{ item.payment_type.name }}</td>
                 <td>{{ item.debt }}</td>
               </tr>
             </tbody>
@@ -57,19 +74,14 @@ export default {
   name: "ListOfLegalEntitiesView",
   data() {
     return {
+      url: "http://boszhan.kz",
       redColor: colors.red.darken1,
       greyColor: colors.grey.lighten4,
       nameLabel: "Name",
       roleLabel: "Role",
-      stores: [
-        {
-          status: 0,
-          name: "Frozen Yogurt",
-          priceType: "BC",
-          paymentType: 1,
-          debt: "12334",
-        },
-      ],
+      searchTextField: "",
+      counteragents: [],
+      displayedList: [],
     };
   },
   methods: {
@@ -80,11 +92,45 @@ export default {
     showHomePage() {
       this.$router.push("/");
     },
-    showMarkets() {
-      this.$router.push("/legal/markets");
+    showMarkets(id, status) {
+      if (status == 1) {
+        localStorage.counteragentId = id.toString();
+        this.$router.push({ name: "legal.markets" });
+      }
+    },
+    getCounteragents() {
+      let config = {
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+          Authorization: "Bearer " + localStorage.token,
+        },
+      };
+      this.axios
+        .get(this.url + "/api/salesrep/counteragent", config)
+        .then((response) => {
+          this.counteragents = response.data;
+          this.displayedList = response.data;
+          console.log(this.counteragents[0]);
+        })
+        .catch((error) => {
+          console.log(JSON.parse(error.response.request.response));
+          this.errorLabel = true;
+          this.countDown = 5;
+          this.countDownTimer();
+        });
+    },
+    searchByName() {
+      this.displayedList = [];
+      for (var i in this.counteragents) {
+        if (this.counteragents[i].name.includes(this.searchTextField)) {
+          this.displayedList.push(this.counteragents[i]);
+        }
+      }
     },
   },
-  created() {},
+  created() {
+    this.getCounteragents();
+  },
   mounted() {
     if (localStorage.isLogedIn == "false") {
       this.$router.push("/auth");

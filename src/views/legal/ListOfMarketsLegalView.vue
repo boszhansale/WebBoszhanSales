@@ -68,6 +68,7 @@ export default {
   name: "ListOfMarketsLegalView",
   data() {
     return {
+      url: "http://boszhan.kz",
       redColor: colors.red.darken1,
       greyColor: colors.grey.lighten4,
       nameLabel: "Name",
@@ -93,7 +94,9 @@ export default {
       this.$router.push("/phys/markets");
     },
   },
-  created() {},
+  created() {
+    console.log(localStorage.counteragentId);
+  },
   mounted() {
     if (localStorage.isLogedIn == "false") {
       this.$router.push("/auth");

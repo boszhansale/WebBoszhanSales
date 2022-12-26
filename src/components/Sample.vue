@@ -34,6 +34,7 @@ export default {
   name: "Sample",
   data() {
     return {
+      url: "http://boszhan.kz",
       redColor: colors.red.darken1,
       greyColor: colors.grey.lighten4,
       nameLabel: "Name",

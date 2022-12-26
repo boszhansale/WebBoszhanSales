@@ -30,7 +30,7 @@ const routes = [
   },
   {
     path: '/legal/markets',
-    name: 'ListOfMarketsLegal',
+    name: 'legal.markets',
     component: ListOfMarketsLegal
   },
   {
