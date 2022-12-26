@@ -21,17 +21,21 @@
       </v-toolbar>
       <v-main>
         <v-container fluid class="pa-10">
+          <h1>Список торговых точек юр. лица</h1>
+          <br />
           <v-row>
             <v-text-field
               class="ma-5"
-              label="Название"
+              label="Поиск..."
               variant="solo"
+              v-model="searchTextField"
             ></v-text-field>
             <v-btn
               stacked
               prepend-icon="mdi-magnify"
               id="searchButton"
               class="ma-5"
+              v-on:click="searchByName"
             >
               Поиск
             </v-btn>
@@ -46,9 +50,9 @@
             </thead>
             <tbody>
               <tr
-                v-for="item in markets"
+                v-for="item in displayedList"
                 :key="item.name"
-                v-on:click="showProductList"
+                v-on:click="showProducts"
               >
                 <td>{{ item.name }}</td>
                 <td>{{ item.address }}</td>
@@ -73,13 +77,9 @@ export default {
       greyColor: colors.grey.lighten4,
       nameLabel: "Name",
       roleLabel: "Role",
-      markets: [
-        {
-          name: "Frozen Yogurt",
-          address: "Abaya 200",
-          phone: "8757848444",
-        },
-      ],
+      searchTextField: "",
+      markets: [],
+      displayedList: [],
     };
   },
   methods: {
@@ -90,12 +90,52 @@ export default {
     showHomePage() {
       this.$router.push("/");
     },
-    showMarketsPhys() {
-      this.$router.push("/phys/markets");
+    showProducts() {
+      this.$router.push("/products");
+    },
+    getCounteragentMarkets() {
+      let config = {
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+          Authorization: "Bearer " + localStorage.token,
+        },
+      };
+      this.axios
+        .get(
+          this.url +
+            "/api/salesrep/store?counteragent_id=" +
+            localStorage.counteragentId,
+          config
+        )
+        .then((response) => {
+          this.markets = response.data;
+          this.displayedList = response.data;
+          console.log(this.markets[0]);
+        })
+        .catch((error) => {
+          console.log(JSON.parse(error.response.request.response));
+          this.errorLabel = true;
+          this.countDown = 5;
+          this.countDownTimer();
+        });
+    },
+    searchByName() {
+      this.displayedList = [];
+      for (var i in this.markets) {
+        if (
+          this.markets[i].name
+            .toLowerCase()
+            .includes(this.searchTextField.toLowerCase())
+        ) {
+          this.displayedList.push(this.markets[i]);
+        }
+      }
     },
   },
   created() {
-    console.log(localStorage.counteragentId);
+    this.getCounteragentMarkets();
+    this.nameLabel = "Пользователь: " + localStorage.username;
+    this.roleLabel = "Водитель: " + localStorage.driverName;
   },
   mounted() {
     if (localStorage.isLogedIn == "false") {

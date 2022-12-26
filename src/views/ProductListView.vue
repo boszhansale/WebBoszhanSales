@@ -19,13 +19,10 @@
           <v-icon>mdi-export</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-main><v-container></v-container> </v-main>
+      <v-main
+        ><v-container><p>Product List</p></v-container>
+      </v-main>
     </div>
-    <v-main>
-      <v-container>
-        <p>Sample!</p>
-      </v-container>
-    </v-main>
   </v-app>
 </template>
   

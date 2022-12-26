@@ -69,6 +69,7 @@ export default {
           localStorage.username = response.data["user"]["name"];
           localStorage.token = response.data["access_token"];
           localStorage.isLogedIn = "true";
+          localStorage.driverName = response.data["user"]["driver"]["name"];
           this.$router.push("/");
         })
         .catch((error) => {

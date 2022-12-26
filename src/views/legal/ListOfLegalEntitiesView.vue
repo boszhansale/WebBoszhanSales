@@ -21,10 +21,12 @@
       </v-toolbar>
       <v-main>
         <v-container fluid class="pa-10">
+          <h1>Список юр. лиц</h1>
+          <br />
           <v-row>
             <v-text-field
               class="ma-5"
-              label="Название"
+              label="Поиск..."
               variant="solo"
               v-model="searchTextField"
             ></v-text-field>
@@ -122,7 +124,11 @@ export default {
     searchByName() {
       this.displayedList = [];
       for (var i in this.counteragents) {
-        if (this.counteragents[i].name.includes(this.searchTextField)) {
+        if (
+          this.counteragents[i].name
+            .toLowerCase()
+            .includes(this.searchTextField.toLowerCase())
+        ) {
           this.displayedList.push(this.counteragents[i]);
         }
       }
@@ -130,6 +136,8 @@ export default {
   },
   created() {
     this.getCounteragents();
+    this.nameLabel = "Пользователь: " + localStorage.username;
+    this.roleLabel = "Водитель: " + localStorage.driverName;
   },
   mounted() {
     if (localStorage.isLogedIn == "false") {

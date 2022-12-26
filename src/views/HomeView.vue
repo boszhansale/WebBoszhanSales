@@ -40,10 +40,9 @@
                   </h3>
                 </div>
                 <div class="text-center">
-                  <div class="pa-10">
+                  <div class="pa-5">
                     <v-btn
                       id="buttons"
-                      block
                       color="orange accent-3"
                       dark
                       @click="dialog = true"
@@ -54,10 +53,9 @@
                   </div>
                 </div>
                 <div class="text-center">
-                  <div class="pa-10">
+                  <div class="pa-5">
                     <v-btn
                       id="buttons"
-                      block
                       color="orange accent-3"
                       dark
                       @click="showCatalog"
@@ -129,7 +127,10 @@ export default {
       this.$router.push("/legal");
     },
   },
-  created() {},
+  created() {
+    this.nameLabel = "Пользователь: " + localStorage.username;
+    this.roleLabel = "Водитель: " + localStorage.driverName;
+  },
   mounted() {
     if (localStorage.isLogedIn == "false") {
       this.$router.push("/auth");
@@ -161,7 +162,8 @@ export default {
 }
 
 #buttons {
-  height: 120px;
+  height: 100px;
+  min-width: 600px;
 }
 
 #logo {
