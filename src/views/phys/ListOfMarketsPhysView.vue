@@ -27,7 +27,7 @@
             <v-text-field
               class="ma-5"
               label="Поиск..."
-              variant="solo"
+              variant="underlined"
               v-model="searchTextField"
             ></v-text-field>
             <v-btn
@@ -52,7 +52,7 @@
               <tr
                 v-for="item in displayedList"
                 :key="item.name"
-                v-on:click="showProducts"
+                v-on:click="showProducts(item.name)"
               >
                 <td>{{ item.name }}</td>
                 <td>{{ item.address }}</td>
@@ -90,7 +90,8 @@ export default {
     showHomePage() {
       this.$router.push("/");
     },
-    showProducts() {
+    showProducts(storeName) {
+      localStorage.storeName = storeName;
       this.$router.push("/products");
     },
     getMarkets() {

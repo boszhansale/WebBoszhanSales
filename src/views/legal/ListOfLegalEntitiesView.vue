@@ -27,7 +27,7 @@
             <v-text-field
               class="ma-5"
               label="Поиск..."
-              variant="solo"
+              variant="underlined"
               v-model="searchTextField"
             ></v-text-field>
             <v-btn

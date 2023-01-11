@@ -21,13 +21,13 @@
       </v-toolbar>
       <v-main>
         <v-container fliud class="pa-10">
-          <h1>Список продуктов</h1>
+          <h1>{{ storeName }}</h1>
           <br />
           <v-row>
             <v-text-field
               class="ma-5"
               label="Поиск..."
-              variant="solo"
+              variant="underlined"
               v-model="searchTextField"
             ></v-text-field>
             <v-btn
@@ -94,10 +94,27 @@
                     :value="item"
                   >
                     <v-img
-                      src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
-                      height="250px"
+                      v-bind:src="
+                        item.images != []
+                          ? item.images[0] != null
+                            ? item.images[0].path
+                            : 'https://mtek3d.com/wp-content/uploads/2018/01/image-placeholder-500x500.jpg'
+                          : 'https://mtek3d.com/wp-content/uploads/2018/01/image-placeholder-500x500.jpg'
+                      "
+                      height="350px"
                       width="400px"
+                      :key="k"
                       cover
+                      class="scale"
+                      ><template v-slot:placeholder>
+                        <div
+                          class="d-flex align-center justify-center fill-height"
+                        >
+                          <v-progress-circular
+                            indeterminate
+                            color="grey-lighten-4"
+                          ></v-progress-circular>
+                        </div> </template
                     ></v-img>
 
                     <v-card-title> {{ item.name }} </v-card-title>
@@ -107,13 +124,21 @@
                     </v-card-subtitle>
 
                     <v-card-actions>
-                      <v-btn color="red" prepend-icon="mdi-basket">
+                      <v-btn
+                        color="red"
+                        prepend-icon="mdi-basket"
+                        @click="(dialog = true), (dialogBasketType = 1)"
+                      >
                         Возврат
                       </v-btn>
 
                       <v-spacer></v-spacer>
 
-                      <v-btn color="green" prepend-icon="mdi-basket">
+                      <v-btn
+                        color="green"
+                        prepend-icon="mdi-basket"
+                        @click="(dialog = true), (dialogBasketType = 0)"
+                      >
                         В корзину
                       </v-btn>
                     </v-card-actions>
@@ -125,6 +150,55 @@
               </v-col>
             </v-row>
           </v-container>
+
+          <div class="text-center">
+            <v-dialog v-model="dialog" width="500">
+              <v-card>
+                <v-card-title class="text-h5 grey lighten-2">
+                  Выберите количество
+                </v-card-title>
+
+                <v-row class="pa-10">
+                  <v-text-field
+                    label="Количество"
+                    suffix="кг/шт"
+                    variant="underlined"
+                    v-model="countTextField"
+                  ></v-text-field>
+                </v-row>
+
+                <br />
+
+                <v-divider></v-divider>
+
+                <v-card-actions class="py-5">
+                  <v-spacer></v-spacer>
+                  <v-btn color="orange accent-3" text @click="dialog = false">
+                    Отмена
+                  </v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn color="orange accent-3" text @click="addToBasket">
+                    Добавить
+                  </v-btn>
+                  <v-spacer></v-spacer>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </div>
+
+          <v-snackbar v-model="snackbar">
+            {{ snackbarText }}
+
+            <template v-slot:actions>
+              <v-btn
+                color="orange accent-3"
+                variant="text"
+                @click="snackbar = false"
+              >
+                Закрыть
+              </v-btn>
+            </template>
+          </v-snackbar>
         </v-container>
       </v-main>
     </div>
@@ -142,12 +216,18 @@ export default {
       greyColor: colors.grey.lighten4,
       nameLabel: "Name",
       roleLabel: "Role",
+      storeName: "",
       searchTextField: "",
       products: [],
       displayedList: [],
       selectedItem: 1,
       categories: [],
       prices: [],
+      dialog: false,
+      dialogBasketType: 0,
+      countTextField: "",
+      snackbar: false,
+      snackbarText: `Введите правильно количество!`,
     };
   },
   methods: {
@@ -198,7 +278,6 @@ export default {
           for (var i = 0; i < this.displayedList.length; i++) {
             this.prices.push(this.displayedList[i].prices[0].price);
           }
-          console.log(this.prices);
         })
         .catch((error) => {
           console.log(JSON.parse(error.response.request.response));
@@ -222,10 +301,21 @@ export default {
         }
       }
     },
+
+    addToBasket() {
+      if (this.countTextField == "") {
+        this.snackbar = true;
+      } else {
+        console.log(this.countTextField);
+        this.dialog = false;
+        console.log(this.dialogBasketType);
+      }
+    },
   },
   created() {
     this.nameLabel = "Пользователь: " + localStorage.username;
     this.roleLabel = "Водитель: " + localStorage.driverName;
+    this.storeName = "Торговая точка: " + localStorage.storeName;
     this.getCategories();
     this.getProducts(23);
   },
@@ -265,5 +355,12 @@ html {
 
 #productAndCategoryRow {
   max-height: 80%;
+}
+
+.scale {
+  transition: 1s; /* Время эффекта */
+}
+.scale:hover {
+  transform: scale(2); /* Увеличиваем масштаб */
 }
 </style>

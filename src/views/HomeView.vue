@@ -58,7 +58,7 @@
                       id="buttons"
                       color="orange accent-3"
                       dark
-                      @click="showCatalog"
+                      @click="dialog = true"
                     >
                       <v-icon left> mdi-order-bool-ascending </v-icon>
                       Мои заказы
