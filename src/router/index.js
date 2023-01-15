@@ -6,6 +6,7 @@ import ListOfMarketsPhys from '../views/phys/ListOfMarketsPhysView.vue'
 import ProductList from '../views/ProductListView.vue'
 import LegalEntities from '../views/legal/ListOfLegalEntitiesView.vue'
 import ListOfMarketsLegal from '../views/legal/ListOfMarketsLegalView.vue'
+import Basket from '../views/BasketView.vue'
 
 const routes = [
   {
@@ -37,6 +38,11 @@ const routes = [
     path: '/products',
     name: 'ProductList',
     component: ProductList
+  },
+  {
+    path: '/basket',
+    name: 'Basket',
+    component: Basket
   },
   {
     path: '/:pathMatch(.*)*',

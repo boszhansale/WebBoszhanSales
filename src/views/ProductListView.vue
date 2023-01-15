@@ -10,6 +10,7 @@
         >
 
         <v-spacer></v-spacer>
+
         <div class="column mb-6">
           <p id="nameLabel">{{ nameLabel }}</p>
           <p id="roleLabel">{{ roleLabel }}</p>
@@ -21,7 +22,18 @@
       </v-toolbar>
       <v-main>
         <v-container fliud class="pa-10">
-          <h1>{{ storeName }}</h1>
+          <v-row>
+            <h1 class="ml-5">{{ storeName }}</h1>
+            <v-btn
+              icon
+              @click="showBasket"
+              class="ml-5"
+              color="orange accent-3"
+            >
+              <v-icon color="white">mdi-basket</v-icon>
+            </v-btn>
+          </v-row>
+
           <br />
           <v-row>
             <v-text-field
@@ -241,7 +253,9 @@ export default {
     chooseCategory(categoryId) {
       this.getProducts(categoryId);
     },
-
+    showBasket() {
+      this.$router.push("/basket");
+    },
     getCategories() {
       let config = {
         headers: {
