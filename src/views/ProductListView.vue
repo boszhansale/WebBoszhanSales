@@ -21,7 +21,7 @@
         </v-btn>
       </v-toolbar>
       <v-main>
-        <v-container fliud class="pa-10">
+        <div class="pa-10">
           <v-row>
             <h1 class="ml-5">{{ storeName }}</h1>
             <v-btn
@@ -52,7 +52,8 @@
               Поиск
             </v-btn>
           </v-row>
-          <v-container>
+          <br />
+          <div>
             <v-row
               no-gutters
               style="flex-wrap: nowrap"
@@ -100,7 +101,7 @@
                 <v-row style="flex-wrap: wrap">
                   <v-card
                     class="ma-2"
-                    max-width="400"
+                    max-width="320"
                     v-for="(item, k) in displayedList"
                     :key="k"
                     :value="item"
@@ -113,8 +114,8 @@
                             : 'https://mtek3d.com/wp-content/uploads/2018/01/image-placeholder-500x500.jpg'
                           : 'https://mtek3d.com/wp-content/uploads/2018/01/image-placeholder-500x500.jpg'
                       "
-                      height="350px"
-                      width="400px"
+                      height="300px"
+                      width="320px"
                       :key="k"
                       cover
                       class="scale"
@@ -129,7 +130,9 @@
                         </div> </template
                     ></v-img>
 
-                    <v-card-title> {{ item.name }} </v-card-title>
+                    <v-card-title>
+                      {{ item.name }}
+                    </v-card-title>
 
                     <v-card-subtitle>
                       {{ prices[k] }} тг/{{ item.measure == 2 ? "кг" : "шт" }}
@@ -167,7 +170,7 @@
                 </v-row>
               </v-col>
             </v-row>
-          </v-container>
+          </div>
 
           <div class="text-center">
             <v-dialog v-model="dialog" width="500">
@@ -217,7 +220,7 @@
               </v-btn>
             </template>
           </v-snackbar>
-        </v-container>
+        </div>
       </v-main>
     </div>
   </v-app>
