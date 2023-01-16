@@ -52,7 +52,7 @@
               <tr
                 v-for="item in displayedList"
                 :key="item.name"
-                v-on:click="showProducts(item.name)"
+                v-on:click="showProducts(item.name, item.discount)"
               >
                 <td>{{ item.name }}</td>
                 <td>{{ item.address }}</td>
@@ -90,8 +90,9 @@ export default {
     showHomePage() {
       this.$router.push("/");
     },
-    showProducts(storeName) {
+    showProducts(storeName, discount) {
       localStorage.storeName = storeName;
+      localStorage.marketDiscount = discount;
       this.$router.push("/products");
     },
     getCounteragentMarkets() {

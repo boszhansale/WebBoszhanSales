@@ -54,7 +54,14 @@
               <tr
                 v-for="item in displayedList"
                 :key="item.name"
-                v-on:click="showMarkets(item.id, item.enabled)"
+                v-on:click="
+                  showMarkets(
+                    item.id,
+                    item.enabled,
+                    item.discount,
+                    item.price_type['id']
+                  )
+                "
               >
                 <td>{{ item.enabled == 1 ? "" : "Заблокирован" }}</td>
                 <td>{{ item.name }}</td>
@@ -94,9 +101,11 @@ export default {
     showHomePage() {
       this.$router.push("/");
     },
-    showMarkets(id, status) {
+    showMarkets(id, status, discount, priceTypeId) {
       if (status == 1) {
         localStorage.counteragentId = id.toString();
+        localStorage.counteragentDiscount = discount;
+        localStorage.priceTypeId = priceTypeId;
         this.$router.push({ name: "legal.markets" });
       }
     },

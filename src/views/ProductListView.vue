@@ -137,9 +137,12 @@
 
                     <v-card-actions>
                       <v-btn
-                        color="red"
+                        v-bind:color="item.return == 1 ? 'red' : 'grey'"
                         prepend-icon="mdi-basket"
-                        @click="(dialog = true), (dialogBasketType = 1)"
+                        @click="
+                          item.return == 1 ? (dialog = true) : null,
+                            (dialogBasketType = 1)
+                        "
                       >
                         Возврат
                       </v-btn>
@@ -147,9 +150,12 @@
                       <v-spacer></v-spacer>
 
                       <v-btn
-                        color="green"
+                        v-bind:color="item.purchase == 1 ? 'green' : 'grey'"
                         prepend-icon="mdi-basket"
-                        @click="(dialog = true), (dialogBasketType = 0)"
+                        @click="
+                          item.purchase == 1 ? (dialog = true) : null,
+                            (dialogBasketType = 0)
+                        "
                       >
                         В корзину
                       </v-btn>
@@ -240,6 +246,7 @@ export default {
       countTextField: "",
       snackbar: false,
       snackbarText: `Введите правильно количество!`,
+      thisPrice: 0,
     };
   },
   methods: {
@@ -287,10 +294,58 @@ export default {
         .get(this.url + "/api/product?category_id=" + categoryId, config)
         .then((response) => {
           this.products = response.data;
-          this.displayedList = response.data;
+          this.displayedList = [];
           this.prices = [];
-          for (var i = 0; i < this.displayedList.length; i++) {
-            this.prices.push(this.displayedList[i].prices[0].price);
+          for (var i = 0; i < this.products.length; i++) {
+            if (localStorage.counteragentDiscount != 0) {
+              this.thisPrice =
+                this.products[i].prices.filter(
+                  (e) => e["price_type_id"] == localStorage.priceTypeId
+                )[0].price *
+                ((100 - localStorage.counteragentDiscount) / 100);
+            } else {
+              if (localStorage.marketDiscount != 0) {
+                this.thisPrice =
+                  this.products[i].prices.filter(
+                    (e) => e["price_type_id"] == localStorage.priceTypeId
+                  )[0].price *
+                  ((100 - localStorage.marketDiscount) / 100);
+              } else {
+                if (this.products[i].discount != 0) {
+                  this.thisPrice =
+                    this.products[i].prices.filter(
+                      (e) => e["price_type_id"] == localStorage.priceTypeId
+                    )[0].price *
+                    ((100 - this.products[i].discount) / 100);
+                } else {
+                  this.thisPrice = this.products[i].prices.filter(
+                    (e) => e["price_type_id"] == localStorage.priceTypeId
+                  )[0].price;
+                }
+              }
+            }
+
+            if (this.products[i]["counteragent_prices"] != null) {
+              for (
+                var j = 0;
+                j < this.products[i]["counteragent_prices"].length;
+                j++
+              ) {
+                if (
+                  this.products[i]["counteragent_prices"][j][
+                    "counteragent_id"
+                  ] == localStorage.counteragentId
+                ) {
+                  this.thisPrice =
+                    this.products[i]["counteragent_prices"][j]["price"];
+                }
+              }
+            }
+
+            if (this.thisPrice != 0) {
+              this.displayedList.push(this.products[i]);
+              this.prices.push(this.thisPrice);
+            }
           }
         })
         .catch((error) => {
@@ -310,8 +365,54 @@ export default {
             .toLowerCase()
             .includes(this.searchTextField.toLowerCase())
         ) {
-          this.displayedList.push(this.products[i]);
-          this.prices.push(this.products[i].prices[0].price);
+          if (localStorage.counteragentDiscount != 0) {
+            this.thisPrice =
+              this.products[i].prices.filter(
+                (e) => e["price_type_id"] == localStorage.priceTypeId
+              )[0].price *
+              ((100 - localStorage.counteragentDiscount) / 100);
+          } else {
+            if (localStorage.marketDiscount != 0) {
+              this.thisPrice =
+                this.products[i].prices.filter(
+                  (e) => e["price_type_id"] == localStorage.priceTypeId
+                )[0].price *
+                ((100 - localStorage.marketDiscount) / 100);
+            } else {
+              if (this.products[i].discount != 0) {
+                this.thisPrice =
+                  this.products[i].prices.filter(
+                    (e) => e["price_type_id"] == localStorage.priceTypeId
+                  )[0].price *
+                  ((100 - this.products[i].discount) / 100);
+              } else {
+                this.thisPrice = this.products[i].prices.filter(
+                  (e) => e["price_type_id"] == localStorage.priceTypeId
+                )[0].price;
+              }
+            }
+          }
+
+          if (this.products[i]["counteragent_prices"] != null) {
+            for (
+              var j = 0;
+              j < this.products[i]["counteragent_prices"].length;
+              j++
+            ) {
+              if (
+                this.products[i]["counteragent_prices"][j]["counteragent_id"] ==
+                localStorage.counteragentId
+              ) {
+                this.thisPrice =
+                  this.products[i]["counteragent_prices"][j]["price"];
+              }
+            }
+          }
+
+          if (this.thisPrice != 0) {
+            this.displayedList.push(this.products[i]);
+            this.prices.push(this.thisPrice);
+          }
         }
       }
     },

@@ -3,3 +3,6 @@ localStorage.token = response.data["access_token"];
 localStorage.isLogedIn = true;
 localStorage.driverName = response.data["user"]["driver"]["name"];
 localStorage.storeName = storeName;
+localStorage.counteragentDiscount = discount;
+localStorage.marketDiscount = discount;
+localStorage.priceTypeId = priceTypeId;
