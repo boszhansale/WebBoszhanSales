@@ -40,14 +40,43 @@
                 <th class="text-left">кл.</th>
                 <th class="text-left">цена</th>
                 <th class="text-left">итого</th>
+                <th class="text-left">тип</th>
+                <th class="text-left"></th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="item in basket" :key="item.name">
-                <td>{{ item.name }}</td>
-                <td>{{ item.address }}</td>
-                <td>{{ item.phone }}</td>
-                <td>{{ item.phone }}</td>
+              <tr v-for="(item, i) in basket" :key="i" :value="item" col>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.count }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.count * item.price }}</td>
+                <td>
+                  <v-chip color="green">
+                    {{ "Покупка" }}
+                  </v-chip>
+                </td>
+                <td>
+                  <v-icon @click="deletePurchase(i)">mdi-delete</v-icon>
+                </td>
+              </tr>
+              <tr
+                v-for="(item2, j) in basketReturns"
+                :key="j"
+                :value="item2"
+                col
+              >
+                <td>{{ item2.product.name }}</td>
+                <td>{{ item2.count }}</td>
+                <td>{{ item2.price }}</td>
+                <td>{{ item2.count * item2.price }}</td>
+                <td>
+                  <v-chip color="red">
+                    {{ "Возврат" }}
+                  </v-chip>
+                </td>
+                <td>
+                  <v-icon @click="deleteReturn(j)">mdi-delete</v-icon>
+                </td>
               </tr>
             </tbody>
           </v-table>
@@ -106,6 +135,7 @@ export default {
       roleLabel: "Role",
       loading: false,
       basket: [],
+      basketReturns: [],
       returnPrice: 0,
       purchasePrice: 0,
       totalPrice: 0,
@@ -123,17 +153,49 @@ export default {
     showProducts() {
       this.$router.push("/products");
     },
-    getBasket() {},
     createOrder() {
       this.loading = true;
       this.loading = false;
     },
     selectDate() {},
+    deletePurchase(index) {
+      this.basket.splice(index, 1);
+      localStorage.basket = JSON.stringify(this.basket);
+    },
+    deleteReturn(index) {
+      this.basketReturns.splice(index, 1);
+      localStorage.basketReturns = JSON.stringify(this.basketReturns);
+    },
   },
   created() {
-    this.getBasket();
     this.nameLabel = "Пользователь: " + localStorage.username;
     this.roleLabel = "Водитель: " + localStorage.driverName;
+
+    if (localStorage.basket != "undefined" && localStorage.basket != null) {
+      this.basket = JSON.parse(localStorage.basket);
+
+      this.purchasePrice = 0;
+
+      for (var i = 0; i < this.basket.length; i++) {
+        this.purchasePrice += this.basket[i].count * this.basket[i].price;
+      }
+    }
+
+    if (
+      localStorage.basketReturns != "undefined" &&
+      localStorage.basketReturns != null
+    ) {
+      this.basketReturns = JSON.parse(localStorage.basketReturns);
+
+      this.returnPrice = 0;
+
+      for (var j = 0; j < this.basketReturns.length; j++) {
+        this.returnPrice +=
+          this.basketReturns[j].count * this.basketReturns[j].price;
+      }
+    }
+
+    this.totalPrice = this.purchasePrice - this.returnPrice;
   },
   mounted() {
     if (localStorage.isLogedIn == "false") {

@@ -142,10 +142,14 @@
                       <v-btn
                         v-bind:color="item.return == 1 ? 'red' : 'grey'"
                         prepend-icon="mdi-basket"
-                        @click="
-                          item.return == 1 ? (dialog = true) : null,
-                            (dialogBasketType = 1)
+                        v-bind:variant="
+                          this.basketReturns.filter(
+                            (e) => e['product'].id == item.id
+                          ).length > 0
+                            ? 'tonal'
+                            : 'text'
                         "
+                        @click="checkProduct(k, 1)"
                       >
                         Возврат
                       </v-btn>
@@ -155,10 +159,13 @@
                       <v-btn
                         v-bind:color="item.purchase == 1 ? 'green' : 'grey'"
                         prepend-icon="mdi-basket"
-                        @click="
-                          item.purchase == 1 ? (dialog = true) : null,
-                            (dialogBasketType = 0)
+                        v-bind:variant="
+                          this.basket.filter((e) => e['product'].id == item.id)
+                            .length > 0
+                            ? 'tonal'
+                            : 'text'
                         "
+                        @click="checkProduct(k, 0)"
                       >
                         В корзину
                       </v-btn>
@@ -250,6 +257,9 @@ export default {
       snackbar: false,
       snackbarText: `Введите правильно количество!`,
       thisPrice: 0,
+      basket: [],
+      basketReturns: [],
+      choosedProductIndex: 0,
     };
   },
   methods: {
@@ -420,13 +430,99 @@ export default {
       }
     },
 
+    checkProduct(index, type) {
+      if (type == 1) {
+        if (
+          this.basketReturns.filter(
+            (e) => e["product"].id == this.displayedList[index].id
+          ).length == 0
+        ) {
+          if (this.displayedList[index].return == 1) {
+            this.dialogBasketType = 1;
+            this.choosedProductIndex = index;
+            this.dialog = true;
+          }
+        } else {
+          var item = this.basketReturns.filter(
+            (e) => e["product"] == this.displayedList[index]
+          )[0];
+          this.basketReturns.splice(this.basketReturns.indexOf(item), 1);
+        }
+      } else {
+        if (
+          this.basket.filter(
+            (e) => e["product"].id == this.displayedList[index].id
+          ).length == 0
+        ) {
+          if (this.displayedList[index].purchase == 1) {
+            this.dialogBasketType = 0;
+            this.choosedProductIndex = index;
+            this.dialog = true;
+          }
+        } else {
+          var item2 = this.basket.filter(
+            (e) => e["product"] == this.displayedList[index]
+          )[0];
+          this.basket.splice(this.basket.indexOf(item2), 1);
+        }
+      }
+
+      localStorage.basket = JSON.stringify(this.basket);
+      localStorage.basketReturns = JSON.stringify(this.basketReturns);
+    },
+
     addToBasket() {
       if (this.countTextField == "") {
         this.snackbar = true;
       } else {
-        console.log(this.countTextField);
+        if (this.dialogBasketType == 1) {
+          if (this.displayedList[this.choosedProductIndex].measure == 2) {
+            if (!Number.isNaN(parseFloat(this.countTextField))) {
+              this.basketReturns.push({
+                product: this.displayedList[this.choosedProductIndex],
+                type: this.dialogBasketType,
+                price: this.prices[this.choosedProductIndex],
+                count: parseFloat(this.countTextField),
+              });
+            }
+          } else {
+            if (Number.isInteger(parseInt(this.countTextField))) {
+              this.basketReturns.push({
+                product: this.displayedList[this.choosedProductIndex],
+                type: this.dialogBasketType,
+                price: this.prices[this.choosedProductIndex],
+                count: parseInt(this.countTextField),
+              });
+            }
+          }
+        } else {
+          if (this.displayedList[this.choosedProductIndex].measure == 2) {
+            if (!Number.isNaN(parseFloat(this.countTextField))) {
+              this.basket.push({
+                product: this.displayedList[this.choosedProductIndex],
+                type: this.dialogBasketType,
+                price: this.prices[this.choosedProductIndex],
+                count: parseFloat(this.countTextField),
+              });
+            }
+          } else {
+            if (Number.isInteger(parseInt(this.countTextField))) {
+              this.basket.push({
+                product: this.displayedList[this.choosedProductIndex],
+                type: this.dialogBasketType,
+                price: this.prices[this.choosedProductIndex],
+                count: parseInt(this.countTextField),
+              });
+            }
+          }
+        }
+
+        localStorage.basket = JSON.stringify(this.basket);
+        localStorage.basketReturns = JSON.stringify(this.basketReturns);
+
+        this.countTextField = "";
+
         this.dialog = false;
-        console.log(this.dialogBasketType);
       }
     },
   },
@@ -434,6 +530,18 @@ export default {
     this.nameLabel = "Пользователь: " + localStorage.username;
     this.roleLabel = "Водитель: " + localStorage.driverName;
     this.storeName = "Торговая точка: " + localStorage.storeName;
+
+    if (localStorage.basket != "undefined" && localStorage.basket != null) {
+      this.basket = JSON.parse(localStorage.basket);
+    }
+
+    if (
+      localStorage.basketReturns != "undefined" &&
+      localStorage.basketReturns != null
+    ) {
+      this.basketReturns = JSON.parse(localStorage.basketReturns);
+    }
+
     this.getCategories();
     this.getProducts(23);
   },
