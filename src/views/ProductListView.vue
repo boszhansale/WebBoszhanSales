@@ -183,7 +183,7 @@
             <v-dialog v-model="dialog" width="500">
               <v-card>
                 <v-card-title class="text-h5 grey lighten-2">
-                  Выберите количество
+                  Введите количество
                 </v-card-title>
 
                 <v-row class="pa-10">
@@ -195,6 +195,26 @@
                   ></v-text-field>
                 </v-row>
 
+                <v-row v-if="dialogBasketType == 1" class="px-10">
+                  <v-select
+                    v-model="selectedReturnRefund"
+                    label="Выберите причину возврата"
+                    :items="returnRefunds"
+                    variant="underlined"
+                    item-title="causeText"
+                    item-value="id"
+                  ></v-select>
+                </v-row>
+
+                <v-row v-if="selectedReturnRefund == 10" class="pa-10">
+                  <v-text-field
+                    label="Причина"
+                    variant="underlined"
+                    v-model="causeText"
+                  ></v-text-field>
+                </v-row>
+
+                <br />
                 <br />
 
                 <v-divider></v-divider>
@@ -253,13 +273,34 @@ export default {
       prices: [],
       dialog: false,
       dialogBasketType: 0,
-      countTextField: "",
+      countTextField: "1.0",
       snackbar: false,
       snackbarText: `Введите правильно количество!`,
       thisPrice: 0,
       basket: [],
       basketReturns: [],
       choosedProductIndex: 0,
+      selectedReturnRefund: 1,
+      causeText: "",
+      returnRefunds: [
+        { causeText: "По сроку годности", id: 1 },
+        { causeText: "По сроку годности более 10 дней", id: 2 },
+        { causeText: "Белая жидкость", id: 3 },
+        { causeText: "Блок продаж по решению ДР", id: 4 },
+        {
+          causeText: "Возврат конечного потребителя/скрытый брак",
+          id: 5,
+        },
+        { causeText: "Низкие продажи", id: 6 },
+        { causeText: "Переход на договор (с ФЗ на ЮЛ)", id: 7 },
+        {
+          causeText:
+            "Поломка оборудования покупателя/закрытие магазина Покупателя",
+          id: 8,
+        },
+        { causeText: "Развакуум", id: 9 },
+        { causeText: "Прочее", id: 10 },
+      ],
     };
   },
   methods: {
@@ -483,6 +524,8 @@ export default {
                 type: this.dialogBasketType,
                 price: this.prices[this.choosedProductIndex],
                 count: parseFloat(this.countTextField),
+                reason_refund_id: this.selectedReturnRefund,
+                comment: this.causeText,
               });
             }
           } else {
@@ -492,6 +535,8 @@ export default {
                 type: this.dialogBasketType,
                 price: this.prices[this.choosedProductIndex],
                 count: parseInt(this.countTextField),
+                reason_refund_id: this.selectedReturnRefund,
+                comment: this.causeText,
               });
             }
           }
@@ -520,7 +565,7 @@ export default {
         localStorage.basket = JSON.stringify(this.basket);
         localStorage.basketReturns = JSON.stringify(this.basketReturns);
 
-        this.countTextField = "";
+        this.countTextField = "1.0";
 
         this.dialog = false;
       }

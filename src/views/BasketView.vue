@@ -95,15 +95,16 @@
           <br />
           <v-row>
             <v-spacer></v-spacer>
-            <h3 class="pt-1 mr-4">Когда доставить: {{ deliveryDate }}</h3>
-            <v-btn
+            <h3 class="pt-1 mr-4">Когда доставить:</h3>
+            <input type="date" v-model="deliveryDate" />
+            <!-- <v-btn
               :loading="loading"
               @click="selectDate"
               color="orange accent-3"
               prepend-icon="mdi-calendar"
             >
               Изменить
-            </v-btn>
+            </v-btn> -->
             <v-spacer></v-spacer>
             <v-btn
               :loading="loading"
@@ -116,6 +117,11 @@
             </v-btn>
             <v-spacer></v-spacer>
           </v-row>
+          <div id="alertLogin">
+            <v-alert v-if="errorLabel" dismissible type="error">
+              Ошибка!!!
+            </v-alert>
+          </div>
         </v-container>
       </v-main>
     </div>
@@ -124,6 +130,7 @@
     
   <script>
 import colors from "vuetify/lib/util/colors";
+
 export default {
   name: "BasketView",
   data() {
@@ -139,7 +146,10 @@ export default {
       returnPrice: 0,
       purchasePrice: 0,
       totalPrice: 0,
-      deliveryDate: "2023-01-14",
+      deliveryDate: "",
+      errorLabel: false,
+      countDown: 5,
+      sendedBasket: [],
     };
   },
   methods: {
@@ -154,17 +164,113 @@ export default {
       this.$router.push("/products");
     },
     createOrder() {
-      this.loading = true;
-      this.loading = false;
+      if (this.totalPrice > 0) {
+        this.loading = true;
+
+        this.sendedBasket = [];
+
+        for (var i = 0; i < this.basket.length; i++) {
+          var tempDict = {};
+          tempDict.product_id = this.basket[i]["product"]["id"];
+          tempDict.count = this.basket[i]["count"];
+          tempDict.type = 0;
+          tempDict.name = this.basket[i]["product"]["name"];
+          tempDict.price = this.basket[i]["price"];
+
+          this.sendedBasket.push(tempDict);
+        }
+
+        for (var j = 0; j < this.basketReturns.length; j++) {
+          var tempDict2 = {};
+          tempDict2.product_id = this.basketReturns[j]["product"]["id"];
+          tempDict2.count = this.basketReturns[j]["count"];
+          tempDict2.type = 1;
+          tempDict2.name = this.basketReturns[j]["product"]["name"];
+          tempDict2.price = this.basketReturns[j]["price"];
+          tempDict2.reason_refund_id =
+            this.basketReturns[j]["reason_refund_id"];
+          if (this.basketReturns[j]["comment"] != null) {
+            tempDict2.comment = this.basketReturns[j]["comment"];
+          } else {
+            tempDict2.comment = " ";
+          }
+
+          this.sendedBasket.push(tempDict2);
+        }
+
+        let config = {
+          headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+          },
+        };
+        const body = {
+          store_id: localStorage.storeId,
+          baskets: this.sendedBasket,
+          mobile_id: new Date().valueOf(),
+          delivery_date: this.deliveryDate,
+        };
+        console.log(body);
+
+        this.axios
+          .post(this.url + "/api/salesrep/order", body, config)
+          .then((response) => {
+            console.log(response.data);
+            localStorage.basket = "[]";
+            localStorage.basketReturns = "[]";
+            this.$router.push("/");
+          })
+          .catch((error) => {
+            console.log(JSON.parse(error.response.request.response));
+            this.errorLabel = true;
+            this.countDown = 5;
+            this.countDownTimer();
+          });
+
+        this.loading = false;
+      } else {
+        this.errorLabel = true;
+        this.countDown = 5;
+        this.countDownTimer();
+      }
     },
+
+    countDownTimer() {
+      if (this.countDown > 0) {
+        setTimeout(() => {
+          this.countDown -= 1;
+          this.countDownTimer();
+        }, 1000);
+      } else {
+        this.errorLabel = false;
+      }
+    },
+
     selectDate() {},
     deletePurchase(index) {
       this.basket.splice(index, 1);
       localStorage.basket = JSON.stringify(this.basket);
+      this.calculatePrice();
     },
     deleteReturn(index) {
       this.basketReturns.splice(index, 1);
       localStorage.basketReturns = JSON.stringify(this.basketReturns);
+      this.calculatePrice();
+    },
+    calculatePrice() {
+      this.purchasePrice = 0;
+
+      for (var i = 0; i < this.basket.length; i++) {
+        this.purchasePrice += this.basket[i].count * this.basket[i].price;
+      }
+
+      this.returnPrice = 0;
+
+      for (var j = 0; j < this.basketReturns.length; j++) {
+        this.returnPrice +=
+          this.basketReturns[j].count * this.basketReturns[j].price;
+      }
+
+      this.totalPrice = this.purchasePrice - this.returnPrice;
     },
   },
   created() {
@@ -173,12 +279,6 @@ export default {
 
     if (localStorage.basket != "undefined" && localStorage.basket != null) {
       this.basket = JSON.parse(localStorage.basket);
-
-      this.purchasePrice = 0;
-
-      for (var i = 0; i < this.basket.length; i++) {
-        this.purchasePrice += this.basket[i].count * this.basket[i].price;
-      }
     }
 
     if (
@@ -186,16 +286,11 @@ export default {
       localStorage.basketReturns != null
     ) {
       this.basketReturns = JSON.parse(localStorage.basketReturns);
-
-      this.returnPrice = 0;
-
-      for (var j = 0; j < this.basketReturns.length; j++) {
-        this.returnPrice +=
-          this.basketReturns[j].count * this.basketReturns[j].price;
-      }
     }
 
-    this.totalPrice = this.purchasePrice - this.returnPrice;
+    this.calculatePrice();
+
+    this.deliveryDate = new Date().toISOString().slice(0, 10);
   },
   mounted() {
     if (localStorage.isLogedIn == "false") {
