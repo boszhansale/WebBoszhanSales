@@ -58,7 +58,7 @@
                       id="buttons"
                       color="orange accent-3"
                       dark
-                      @click="dialog = true"
+                      @click="showMyOrders"
                     >
                       <v-icon left> mdi-order-bool-ascending </v-icon>
                       Мои заказы
@@ -125,6 +125,9 @@ export default {
     },
     showLegalEntities() {
       this.$router.push("/legal");
+    },
+    showMyOrders() {
+      this.$router.push("/my/orders");
     },
   },
   created() {

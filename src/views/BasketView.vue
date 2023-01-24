@@ -201,6 +201,7 @@ export default {
         let config = {
           headers: {
             "Content-Type": "application/json; charset=UTF-8",
+            Authorization: "Bearer " + localStorage.token,
           },
         };
         const body = {

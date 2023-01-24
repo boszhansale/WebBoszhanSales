@@ -7,6 +7,8 @@ import ProductList from '../views/ProductListView.vue'
 import LegalEntities from '../views/legal/ListOfLegalEntitiesView.vue'
 import ListOfMarketsLegal from '../views/legal/ListOfMarketsLegalView.vue'
 import Basket from '../views/BasketView.vue'
+import MyOrders from '../views/MyOrdersView.vue'
+import MyOrderProducts from '../views/MyOrderProductsView.vue'
 
 const routes = [
   {
@@ -43,6 +45,16 @@ const routes = [
     path: '/basket',
     name: 'Basket',
     component: Basket
+  },
+  {
+    path: '/my/orders',
+    name: 'MyOrders',
+    component: MyOrders
+  },
+  {
+    path: '/my/order/products',
+    name: 'MyOrderProducts',
+    component: MyOrderProducts
   },
   {
     path: '/:pathMatch(.*)*',

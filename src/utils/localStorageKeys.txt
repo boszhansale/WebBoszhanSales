@@ -8,3 +8,4 @@ localStorage.counteragentDiscount = discount;
 localStorage.counteragentId = id.toString();
 localStorage.marketDiscount = discount;
 localStorage.priceTypeId = priceTypeId;
+localStorage.myOrderProducts = baskets;
