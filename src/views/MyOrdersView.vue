@@ -62,7 +62,7 @@ export default {
   name: "MyOrdersView",
   data() {
     return {
-      url: "http://boszhan.kz",
+      url: "https://boszhan.kz",
       redColor: colors.red.darken1,
       greyColor: colors.grey.lighten4,
       nameLabel: "Name",
