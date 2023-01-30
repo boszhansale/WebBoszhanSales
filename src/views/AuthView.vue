@@ -37,7 +37,7 @@ export default {
     return {
       redColor: colors.red.darken1,
       greyColor: colors.grey.lighten4,
-      url: "http://boszhan.kz",
+      url: "https://boszhan.kz",
       login: "",
       password: "",
       errorLabel: false,
@@ -59,7 +59,7 @@ export default {
     loginAction() {
       let config = {
         headers: {
-          // "Content-Type": "application/json; charset=UTF-8",
+          "Content-Type": "application/json; charset=UTF-8",
         },
       };
       const body = { login: this.login, password: this.password };
