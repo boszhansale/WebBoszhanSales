@@ -59,7 +59,7 @@ export default {
     loginAction() {
       let config = {
         headers: {
-          "Content-Type": "application/json; charset=UTF-8",
+          // "Content-Type": "application/json; charset=UTF-8",
         },
       };
       const body = { login: this.login, password: this.password };
