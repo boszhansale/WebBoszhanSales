@@ -513,7 +513,7 @@ export default {
     },
 
     addToBasket() {
-      if (this.countTextField == "") {
+      if (this.countTextField == "" || parseFloat(this.countTextField) == 0) {
         this.snackbar = true;
       } else {
         if (this.dialogBasketType == 1) {
@@ -534,7 +534,10 @@ export default {
                 product: this.displayedList[this.choosedProductIndex],
                 type: this.dialogBasketType,
                 price: this.prices[this.choosedProductIndex],
-                count: parseInt(this.countTextField),
+                count:
+                  parseInt(this.countTextField) == 0
+                    ? 1
+                    : parseInt(this.countTextField),
                 reason_refund_id: this.selectedReturnRefund,
                 comment: this.causeText,
               });
@@ -556,7 +559,10 @@ export default {
                 product: this.displayedList[this.choosedProductIndex],
                 type: this.dialogBasketType,
                 price: this.prices[this.choosedProductIndex],
-                count: parseInt(this.countTextField),
+                count:
+                  parseInt(this.countTextField) == 0
+                    ? 1
+                    : parseInt(this.countTextField),
               });
             }
           }
