@@ -9,6 +9,7 @@ import ListOfMarketsLegal from '../views/legal/ListOfMarketsLegalView.vue'
 import Basket from '../views/BasketView.vue'
 import MyOrders from '../views/MyOrdersView.vue'
 import MyOrderProducts from '../views/MyOrderProductsView.vue'
+import CreateNewMarket from '../views/phys/CreateNewMarketView.vue'
 
 const routes = [
   {
@@ -25,6 +26,11 @@ const routes = [
     path: '/phys/markets',
     name: 'ListOfMarketsPhys',
     component: ListOfMarketsPhys
+  },
+  {
+    path: '/markets/create',
+    name: 'CreateNewMarket',
+    component: CreateNewMarket
   },
   {
     path: '/legal',

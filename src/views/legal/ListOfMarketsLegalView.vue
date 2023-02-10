@@ -21,7 +21,18 @@
       </v-toolbar>
       <v-main>
         <v-container fluid class="pa-10">
-          <h1>Список торговых точек юр. лица</h1>
+          <v-row>
+            <h1>Список торговых точек юр. лица</h1>
+            <v-spacer></v-spacer>
+            <v-btn
+              prepend-icon="mdi-plus-circle"
+              v-on:click="showCreatePage"
+              class="ma-2"
+            >
+              Создать
+            </v-btn>
+          </v-row>
+
           <br />
           <v-row>
             <v-text-field
@@ -89,6 +100,9 @@ export default {
     },
     showHomePage() {
       this.$router.push("/");
+    },
+    showCreatePage() {
+      this.$router.push("/markets/create");
     },
     showProducts(storeName, discount, storeId) {
       localStorage.basket = "[]";
