@@ -124,13 +124,11 @@ export default {
       }
       this.axios
         .post(this.url + "/api/salesrep/store", body, config)
-        .then((response) => {
+        .then(() => {
           this.nameTextField = "";
           this.phoneTextField = "";
           this.binTextField = "";
           this.addressTextField = "";
-
-          console.log(response);
 
           this.successLabel = true;
           this.countDown = 5;
