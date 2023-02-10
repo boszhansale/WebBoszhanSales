@@ -91,6 +91,8 @@ export default {
       this.$router.push("/");
     },
     showProducts(storeName, discount, storeId) {
+      localStorage.basket = "[]";
+      localStorage.basketReturns = "[]";
       localStorage.storeName = storeName;
       localStorage.storeId = storeId;
       localStorage.counteragentId = 0;
