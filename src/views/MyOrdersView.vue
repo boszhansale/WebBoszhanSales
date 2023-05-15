@@ -30,6 +30,8 @@
                 <th class="text-left">ID заказа</th>
                 <th class="text-left">ID магазина</th>
                 <th class="text-left">Название</th>
+                <th class="text-left">Дата создания</th>
+                <th class="text-left">Дата доставки</th>
                 <th class="text-left">Сумма покупки</th>
                 <th class="text-left">Удаление</th>
                 <th class="text-left">Показать</th>
@@ -40,6 +42,8 @@
                 <td>{{ item.id }}</td>
                 <td>{{ item.store_id }}</td>
                 <td>{{ item.store.name }}</td>
+                <td>{{ item.created_at }}</td>
+                <td>{{ item.delivery_date }}</td>
                 <td>{{ item.purchase_price + " тг" }}</td>
                 <td>
                   <v-icon @click="deleteOrder(item.id)">mdi-delete</v-icon>
@@ -97,6 +101,7 @@ export default {
         .get(this.url + "/api/salesrep/order", config)
         .then((response) => {
           this.myOrders = response.data;
+          console.log(this.myOrders);
         })
         .catch((error) => {
           console.log(JSON.parse(error.response.request.response));
