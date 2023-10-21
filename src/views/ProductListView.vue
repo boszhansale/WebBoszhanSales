@@ -529,6 +529,7 @@ export default {
                   reason_refund_id: this.selectedReturnRefund,
                   comment: this.causeText,
                 });
+                this.selectedReturnRefund = 0;
                 this.countTextField = "1.0";
 
                 this.dialog = false;
@@ -548,6 +549,7 @@ export default {
                   reason_refund_id: this.selectedReturnRefund,
                   comment: this.causeText,
                 });
+                this.selectedReturnRefund = 0;
                 this.countTextField = "1.0";
 
                 this.dialog = false;
