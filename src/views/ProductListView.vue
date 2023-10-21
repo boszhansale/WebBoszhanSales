@@ -519,7 +519,7 @@ export default {
         if (this.dialogBasketType == 1) {
           if (this.displayedList[this.choosedProductIndex].measure == 2) {
             if (!Number.isNaN(parseFloat(this.countTextField))) {
-              if (selectedReturnRefund != 0) {
+              if (this.selectedReturnRefund != 0) {
                 this.basketReturns.push({
                   product: this.displayedList[this.choosedProductIndex],
                   type: this.dialogBasketType,
@@ -532,7 +532,7 @@ export default {
             }
           } else {
             if (Number.isInteger(parseInt(this.countTextField))) {
-              if (selectedReturnRefund != 0) {
+              if (this.selectedReturnRefund != 0) {
                 this.basketReturns.push({
                   product: this.displayedList[this.choosedProductIndex],
                   type: this.dialogBasketType,
