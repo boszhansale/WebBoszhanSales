@@ -283,6 +283,7 @@ export default {
       selectedReturnRefund: 0,
       causeText: "",
       returnRefunds: [
+        { causeText: "Выберите причину", id: 0 },
         { causeText: "По сроку годности", id: 1 },
         { causeText: "По сроку годности более 10 дней", id: 2 },
         { causeText: "Белая жидкость", id: 3 },
@@ -528,6 +529,9 @@ export default {
                   reason_refund_id: this.selectedReturnRefund,
                   comment: this.causeText,
                 });
+                this.countTextField = "1.0";
+
+                this.dialog = false;
               }
             }
           } else {
@@ -544,6 +548,9 @@ export default {
                   reason_refund_id: this.selectedReturnRefund,
                   comment: this.causeText,
                 });
+                this.countTextField = "1.0";
+
+                this.dialog = false;
               }
             }
           }
@@ -556,6 +563,9 @@ export default {
                 price: this.prices[this.choosedProductIndex],
                 count: parseFloat(this.countTextField),
               });
+              this.countTextField = "1.0";
+
+              this.dialog = false;
             }
           } else {
             if (Number.isInteger(parseInt(this.countTextField))) {
@@ -568,16 +578,15 @@ export default {
                     ? 1
                     : parseInt(this.countTextField),
               });
+              this.countTextField = "1.0";
+
+              this.dialog = false;
             }
           }
         }
 
         localStorage.basket = JSON.stringify(this.basket);
         localStorage.basketReturns = JSON.stringify(this.basketReturns);
-
-        this.countTextField = "1.0";
-
-        this.dialog = false;
       }
     },
   },
