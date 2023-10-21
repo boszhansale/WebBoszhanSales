@@ -280,7 +280,7 @@ export default {
       basket: [],
       basketReturns: [],
       choosedProductIndex: 0,
-      selectedReturnRefund: 1,
+      selectedReturnRefund: 0,
       causeText: "",
       returnRefunds: [
         { causeText: "По сроку годности", id: 1 },
@@ -519,28 +519,32 @@ export default {
         if (this.dialogBasketType == 1) {
           if (this.displayedList[this.choosedProductIndex].measure == 2) {
             if (!Number.isNaN(parseFloat(this.countTextField))) {
-              this.basketReturns.push({
-                product: this.displayedList[this.choosedProductIndex],
-                type: this.dialogBasketType,
-                price: this.prices[this.choosedProductIndex],
-                count: parseFloat(this.countTextField),
-                reason_refund_id: this.selectedReturnRefund,
-                comment: this.causeText,
-              });
+              if (selectedReturnRefund != 0) {
+                this.basketReturns.push({
+                  product: this.displayedList[this.choosedProductIndex],
+                  type: this.dialogBasketType,
+                  price: this.prices[this.choosedProductIndex],
+                  count: parseFloat(this.countTextField),
+                  reason_refund_id: this.selectedReturnRefund,
+                  comment: this.causeText,
+                });
+              }
             }
           } else {
             if (Number.isInteger(parseInt(this.countTextField))) {
-              this.basketReturns.push({
-                product: this.displayedList[this.choosedProductIndex],
-                type: this.dialogBasketType,
-                price: this.prices[this.choosedProductIndex],
-                count:
-                  parseInt(this.countTextField) == 0
-                    ? 1
-                    : parseInt(this.countTextField),
-                reason_refund_id: this.selectedReturnRefund,
-                comment: this.causeText,
-              });
+              if (selectedReturnRefund != 0) {
+                this.basketReturns.push({
+                  product: this.displayedList[this.choosedProductIndex],
+                  type: this.dialogBasketType,
+                  price: this.prices[this.choosedProductIndex],
+                  count:
+                    parseInt(this.countTextField) == 0
+                      ? 1
+                      : parseInt(this.countTextField),
+                  reason_refund_id: this.selectedReturnRefund,
+                  comment: this.causeText,
+                });
+              }
             }
           }
         } else {
