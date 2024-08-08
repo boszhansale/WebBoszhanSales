@@ -210,18 +210,18 @@ export default {
           mobile_id: new Date().valueOf(),
           delivery_date: this.deliveryDate,
         };
-        console.log(body);
+        // console.log(body);
 
         this.axios
           .post(this.url + "/api/salesrep/order", body, config)
           .then((response) => {
-            console.log(response.data);
+            // console.log(response.data);
             localStorage.basket = "[]";
             localStorage.basketReturns = "[]";
             this.$router.push("/");
           })
           .catch((error) => {
-            console.log(JSON.parse(error.response.request.response));
+            // console.log(JSON.parse(error.response.request.response));
             this.errorLabel = true;
             this.countDown = 5;
             this.countDownTimer();
