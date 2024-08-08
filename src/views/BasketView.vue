@@ -214,13 +214,13 @@ export default {
 
         this.axios
           .post(this.url + "/api/salesrep/order", body, config)
-          .then((response) => {
+          .then(() => {
             // console.log(response.data);
             localStorage.basket = "[]";
             localStorage.basketReturns = "[]";
             this.$router.push("/");
           })
-          .catch((error) => {
+          .catch(() => {
             // console.log(JSON.parse(error.response.request.response));
             this.errorLabel = true;
             this.countDown = 5;
