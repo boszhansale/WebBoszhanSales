@@ -20,7 +20,7 @@
         </div>
         <div id="alertLogin">
           <v-alert v-if="errorLabel" dismissible type="error">
-            Неправильный логин или пароль!
+            {{ errorMessage }}
           </v-alert>
         </div>
       </div>
@@ -66,14 +66,50 @@ export default {
       this.axios
         .post(this.url + "/api/login", body, config)
         .then((response) => {
-          localStorage.username = response.data["user"]["name"];
-          localStorage.token = response.data["access_token"];
+          // console.log("Полный ответ:", JSON.stringify(response.data, null, 2));
+          
+          if (response.data && response.data.user && response.data.user.name) {
+            localStorage.username = response.data.user.name;
+          } else {
+            console.warn("Предупреждение: Поле 'name' отсутствует в ответе");
+            localStorage.username = "Неизвестный пользователь";
+          }
+          
+          if (response.data && response.data.access_token) {
+            localStorage.token = response.data.access_token;
+          } else {
+            console.error("Ошибка: Поле 'access_token' отсутствует в ответе");
+            throw new Error("Отсутствует токен доступа");
+          }
+          
           localStorage.isLogedIn = "true";
-          localStorage.driverName = response.data["user"]["driver"]["name"];
+          
+          if (response.data && response.data.user && response.data.user.driver && response.data.user.driver.name) {
+            localStorage.driverName = response.data.user.driver.name;
+          } else {
+            console.warn("Предупреждение: Поле 'driver.name' отсутствует в ответе");
+            localStorage.driverName = "Неизвестный водитель";
+          }
+          
           this.$router.push("/");
         })
         .catch((error) => {
-          console.log(JSON.parse(error.response.request.response));
+          console.error("Ошибка входа:", error);
+          
+          if (error.response) {
+            // console.error("Полный ответ об ошибке:", JSON.stringify(error.response.data, null, 2));
+            // console.error("Статус ошибки:", error.response.status);
+            // console.error("Заголовки ошибки:", error.response.headers);
+            
+            this.errorMessage = error.response.data.message || "Произошла ошибка при входе.";
+          } else if (error.request) {
+            // console.error("Запрос ошибки:", error.request);
+            this.errorMessage = "Нет ответа от сервера.";
+          } else {
+            console.error("Сообщение об ошибке:", error.message);
+            this.errorMessage = "Произошла неизвестная ошибка.";
+          }
+          
           this.errorLabel = true;
           this.countDown = 5;
           this.countDownTimer();

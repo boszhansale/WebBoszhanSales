@@ -258,39 +258,77 @@ export default {
       this.calculatePrice();
     },
     calculatePrice() {
-      this.purchasePrice = 0;
+      try {
+        // Расчет цены покупки
+        this.purchasePrice = this.basket.reduce((total, item) => {
+          const count = Number(item.count) || 0;
+          const price = Number(item.price) || 0;
+          return total + (count * price);
+        }, 0);
 
-      for (var i = 0; i < this.basket.length; i++) {
-        this.purchasePrice += this.basket[i].count * this.basket[i].price;
+        // Расчет цены возврата
+        this.returnPrice = this.basketReturns.reduce((total, item) => {
+          const count = Number(item.count) || 0;
+          const price = Number(item.price) || 0;
+          return total + (count * price);
+        }, 0);
+
+        // Расчет общей цены
+        this.totalPrice = this.purchasePrice - this.returnPrice;
+
+        // Округление всех цен до двух знаков после запятой
+        this.purchasePrice = Number(this.purchasePrice.toFixed(2));
+        this.returnPrice = Number(this.returnPrice.toFixed(2));
+        this.totalPrice = Number(this.totalPrice.toFixed(2));
+
+      } catch (error) {
+        console.error("Ошибка при расчете цены:", error);
+        // Установка значений по умолчанию в случае ошибки
+        this.purchasePrice = 0;
+        this.returnPrice = 0;
+        this.totalPrice = 0;
       }
-
-      this.returnPrice = 0;
-
-      for (var j = 0; j < this.basketReturns.length; j++) {
-        this.returnPrice +=
-          this.basketReturns[j].count * this.basketReturns[j].price;
-      }
-
-      this.totalPrice = this.purchasePrice - this.returnPrice;
     },
   },
   created() {
-    this.nameLabel = "Пользователь: " + localStorage.username;
-    this.roleLabel = "Водитель: " + localStorage.driverName;
+    // Обработка имени пользователя
+    this.nameLabel = "Пользователь: " + (localStorage.username || "Неизвестный");
 
-    if (localStorage.basket != "undefined" && localStorage.basket != null) {
-      this.basket = JSON.parse(localStorage.basket);
+    // Обработка имени водителя
+    this.roleLabel = "Водитель: " + (localStorage.driverName || "Неизвестный");
+
+    // Обработка корзины
+    try {
+      if (localStorage.basket && localStorage.basket !== "undefined") {
+        this.basket = JSON.parse(localStorage.basket);
+      } else {
+        this.basket = [];
+      }
+    } catch (error) {
+      console.error("Ошибка при парсинге корзины:", error);
+      this.basket = [];
     }
 
-    if (
-      localStorage.basketReturns != "undefined" &&
-      localStorage.basketReturns != null
-    ) {
-      this.basketReturns = JSON.parse(localStorage.basketReturns);
+    // Обработка возвратов
+    try {
+      if (localStorage.basketReturns && localStorage.basketReturns !== "undefined") {
+        this.basketReturns = JSON.parse(localStorage.basketReturns);
+      } else {
+        this.basketReturns = [];
+      }
+    } catch (error) {
+      console.error("Ошибка при парсинге возвратов:", error);
+      this.basketReturns = [];
     }
 
-    this.calculatePrice();
+    // Вызов метода расчета цены
+    try {
+      this.calculatePrice();
+    } catch (error) {
+      console.error("Ошибка при расчете цены:", error);
+    }
 
+    // Установка даты доставки
     this.deliveryDate = new Date().toISOString().slice(0, 10);
   },
   mounted() {

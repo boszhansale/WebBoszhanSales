@@ -131,8 +131,17 @@ export default {
     },
   },
   created() {
-    this.nameLabel = "Пользователь: " + localStorage.username;
-    this.roleLabel = "Водитель: " + localStorage.driverName;
+    // Проверяем наличие имени пользователя в localStorage
+    const username = localStorage.username || "Неизвестный пользователь";
+    this.nameLabel = "Пользователь: " + username;
+
+    // Проверяем наличие имени водителя в localStorage
+    const driverName = localStorage.driverName;
+    if (driverName && driverName !== "undefined") {
+      this.roleLabel = "Водитель: " + driverName;
+    } else {
+      this.roleLabel = "Неизвестный водитель";
+    }
   },
   mounted() {
     if (localStorage.isLogedIn == "false") {

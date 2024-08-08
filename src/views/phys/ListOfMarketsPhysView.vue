@@ -126,12 +126,22 @@ export default {
       this.axios
         .get(this.url + "/api/salesrep/store?counteragent=0", config)
         .then((response) => {
+          console.log("Полный ответ от сервера:", JSON.stringify(response.data, null, 2));
           this.markets = response.data;
           this.displayedList = response.data;
-          console.log(this.markets[0]);
+          console.log("Первый элемент массива markets:", this.markets[0]);
         })
         .catch((error) => {
-          console.log(JSON.parse(error.response.request.response));
+          console.error("Ошибка при получении данных:", error);
+          if (error.response) {
+            console.error("Данные ошибки:", error.response.data);
+            console.error("Статус ошибки:", error.response.status);
+            console.error("Заголовки ошибки:", error.response.headers);
+          } else if (error.request) {
+            console.error("Запрос был сделан, но ответ не получен:", error.request);
+          } else {
+            console.error("Ошибка при настройке запроса:", error.message);
+          }
           this.errorLabel = true;
           this.countDown = 5;
           this.countDownTimer();
