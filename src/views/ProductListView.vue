@@ -473,42 +473,32 @@ export default {
     },
 
     checkProduct(index, type) {
-      if (type == 1) {
-        if (
-          this.basketReturns.filter(
-            (e) => e["product"].id == this.displayedList[index].id
-          ).length == 0
-        ) {
-          if (this.displayedList[index].return == 1) {
-            this.dialogBasketType = 1;
-            this.choosedProductIndex = index;
-            this.dialog = true;
-          }
-        } else {
-          var item = this.basketReturns.filter(
-            (e) => e["product"] == this.displayedList[index]
-          )[0];
-          this.basketReturns.splice(this.basketReturns.indexOf(item), 1);
+      const productId = this.displayedList[index].id;
+
+      if (type === 1) {
+        const returnIndex = this.basketReturns.findIndex(e => e.product.id === productId);
+        if (returnIndex !== -1) {
+          this.basketReturns.splice(returnIndex, 1);
+        } else if (this.displayedList[index].return === 1) {
+          this.dialogBasketType = 1;
+          this.choosedProductIndex = index;
+          this.dialog = true;
         }
       } else {
-        if (
-          this.basket.filter(
-            (e) => e["product"].id == this.displayedList[index].id
-          ).length == 0
-        ) {
-          if (this.displayedList[index].purchase == 1) {
-            this.dialogBasketType = 0;
-            this.choosedProductIndex = index;
-            this.dialog = true;
-          }
-        } else {
-          var item2 = this.basket.filter(
-            (e) => e["product"] == this.displayedList[index]
-          )[0];
-          this.basket.splice(this.basket.indexOf(item2), 1);
+        const basketIndex = this.basket.findIndex(e => e.product.id === productId);
+        if (basketIndex !== -1) {
+          this.basket.splice(basketIndex, 1);
+        } else if (this.displayedList[index].purchase === 1) {
+          this.dialogBasketType = 0;
+          this.choosedProductIndex = index;
+          this.dialog = true;
         }
       }
 
+      this.updateLocalStorage();
+    },
+
+    updateLocalStorage() {
       localStorage.basket = JSON.stringify(this.basket);
       localStorage.basketReturns = JSON.stringify(this.basketReturns);
     },
@@ -587,8 +577,7 @@ export default {
           }
         }
 
-        localStorage.basket = JSON.stringify(this.basket);
-        localStorage.basketReturns = JSON.stringify(this.basketReturns);
+        this.updateLocalStorage();
       }
     },
   },
