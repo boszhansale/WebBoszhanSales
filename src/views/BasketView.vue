@@ -96,15 +96,15 @@
           <v-row>
             <v-spacer></v-spacer>
             <h3 class="pt-1 mr-4">Когда доставить:</h3>
-            <input type="date" v-model="deliveryDate" />
-            <!-- <v-btn
-              :loading="loading"
-              @click="selectDate"
-              color="orange accent-3"
-              prepend-icon="mdi-calendar"
+            <!-- <input type="date" v-model="deliveryDate" /> -->
+            <input 
+              type="date" 
+              v-model="deliveryDate" 
+              :min="minDate" 
+              :max="maxDate"
+              @input="validateDate" 
+              :class="{ 'disabled-weekend': isWeekend(deliveryDate) }"
             >
-              Изменить
-            </v-btn> -->
             <v-spacer></v-spacer>
             <v-btn
               :loading="loading"
@@ -150,6 +150,8 @@ export default {
       errorLabel: false,
       countDown: 5,
       sendedBasket: [],
+      minDate: '',
+      maxDate: '', 
     };
   },
   methods: {
@@ -170,7 +172,7 @@ export default {
         this.sendedBasket = [];
 
         for (var i = 0; i < this.basket.length; i++) {
-          var tempDict = {};
+          let tempDict = {};
           tempDict.product_id = this.basket[i]["product"]["id"];
           tempDict.count = this.basket[i]["count"];
           tempDict.type = 0;
@@ -181,7 +183,7 @@ export default {
         }
 
         for (var j = 0; j < this.basketReturns.length; j++) {
-          var tempDict2 = {};
+          let tempDict2 = {};
           tempDict2.product_id = this.basketReturns[j]["product"]["id"];
           tempDict2.count = this.basketReturns[j]["count"];
           tempDict2.type = 1;
@@ -246,7 +248,6 @@ export default {
       }
     },
 
-    selectDate() {},
     deletePurchase(index) {
       this.basket.splice(index, 1);
       localStorage.basket = JSON.stringify(this.basket);
@@ -261,15 +262,15 @@ export default {
       try {
         // Расчет цены покупки
         this.purchasePrice = this.basket.reduce((total, item) => {
-          const count = Number(item.count) || 0;
-          const price = Number(item.price) || 0;
+          const count = +item.count || 0;
+          const price = +item.price || 0;
           return total + (count * price);
         }, 0);
 
         // Расчет цены возврата
         this.returnPrice = this.basketReturns.reduce((total, item) => {
-          const count = Number(item.count) || 0;
-          const price = Number(item.price) || 0;
+          const count = +item.count || 0;
+          const price = +item.price || 0;
           return total + (count * price);
         }, 0);
 
@@ -287,6 +288,43 @@ export default {
         this.purchasePrice = 0;
         this.returnPrice = 0;
         this.totalPrice = 0;
+      }
+    },
+
+    getNextDay() {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return tomorrow;
+    },
+    
+    getMaxDate() {
+      const maxDate = new Date();
+      maxDate.setFullYear(maxDate.getFullYear() + 1); // Устанавливаем максимальную дату через год
+      return maxDate;
+    },
+    
+    isWeekend(dateString) {
+      const date = new Date(dateString);
+      const day = date.getDay();
+      return day === 0 || day === 6; // 0 - воскресенье, 6 - суббота
+    },
+    
+    validateDate() {
+      const selectedDate = new Date(this.deliveryDate);
+      const minDate = new Date(this.minDate);
+      
+      if (selectedDate < minDate) {
+        this.deliveryDate = this.minDate;
+      } else if (this.isWeekend(this.deliveryDate)) {
+        // Если выбрана суббота, переносим на понедельник
+        if (selectedDate.getDay() === 6) {
+          selectedDate.setDate(selectedDate.getDate() + 2);
+        } 
+        // Если выбрано воскресенье, переносим на понедельник
+        else if (selectedDate.getDay() === 0) {
+          selectedDate.setDate(selectedDate.getDate() + 1);
+        }
+        this.deliveryDate = selectedDate.toISOString().split('T')[0];
       }
     },
   },
@@ -329,7 +367,9 @@ export default {
     }
 
     // Установка даты доставки
-    this.deliveryDate = new Date().toISOString().slice(0, 10);
+    this.minDate = this.getNextDay().toISOString().split('T')[0];
+    this.maxDate = this.getMaxDate().toISOString().split('T')[0];
+    this.deliveryDate = this.minDate;
   },
   mounted() {
     if (localStorage.isLogedIn == "false") {
@@ -340,7 +380,7 @@ export default {
 </script>
     
     
-  <style scoped>
+<style scoped>
 #mainDiv {
   font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
   background-image: url("../assets/images/bg.png");
